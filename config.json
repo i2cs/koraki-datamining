@@ -13,5 +13,9 @@
     "default": {
         "confidence": 0.5,
         "support": 0.003
+    },
+    "webservice": {
+        "host": "localhost",
+        "port": 4444
     }
 }

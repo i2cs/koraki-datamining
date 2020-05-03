@@ -1,5 +1,14 @@
 # koraki-datamining project
 
+## installation
+pip install flask
+pip install flask-restful
+pip install waitress
+
+pip install request
+pip install mysql-connector
+
+
 ## apriori.py
 A simple implementation of Apriori algorithm by Python by Yu Mochizuki
 
