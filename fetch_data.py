@@ -3,15 +3,16 @@ import mysql.connector
 import datetime
 from collections import defaultdict
 import csv
-import argparse 
+import argparse
+import json
 
 from apriori import apriori
 
-def run_rule_mining(siteid, confidence, support):
-    db = mysql.connector.connect(host="localhost", port="8889", user="root", passwd="root", database="datamining")
+def run_rule_mining(siteid, confidence, support, conf):
+    db = mysql.connector.connect(host=conf['mysql']['host'], port=conf['mysql']['port'], user=conf['mysql']['user'], passwd=conf['mysql']['password'], database=conf['mysql']['database'])
     cursor = db.cursor()
     
-    response = requests.get('https://analytics.koraki.io/index.php?module=API&method=Live.getLastVisitsDetails&idSite=' + siteid + '&period=week&date=today&format=JSON&token_auth=10ce40d31a4bb14767e790f376782543')
+    response = requests.get(conf['piwik']['fetch_events'].replace('{{siteid}}', siteid))
     if response.status_code == 200:
         product_meta = {}
         data = response.json()
@@ -96,4 +97,7 @@ if __name__ == '__main__':
     if args.siteid: 
         siteid = args.siteid
         
-    run_rule_mining(siteid, args.confidence, args.support)
+    with open("config.json", "r") as json_file:
+        conf = json.load(json_file)
+        
+    run_rule_mining(siteid, args.confidence, args.support, conf)

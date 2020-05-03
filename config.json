@@ -1,0 +1,17 @@
+{ 
+    "mysql": {
+        "host": "localhost",
+        "port": "8889",
+        "user": "root",
+        "password": "root",
+        "database": "datamining"
+    },
+    "piwik": {
+        "fetch_sites": "https://analytics.koraki.io/index.php?module=API&method=MultiSites.getAll&period=day&date=yesterday&format=JSON&showColumns=&token_auth=10ce40d31a4bb14767e790f376782543",
+        "fetch_events": "https://analytics.koraki.io/index.php?module=API&method=Live.getLastVisitsDetails&idSite={{siteid}}&period=week&date=today&format=JSON&token_auth=10ce40d31a4bb14767e790f376782543"
+    },
+    "default": {
+        "confidence": 0.5,
+        "support": 0.003
+    }
+}
