@@ -29,7 +29,7 @@ def run_rule_mining(siteid, confidence, support, conf):
                                 product_meta[event[3]] = { 'name': action['eventAction'], 'url': event[1], 'image': event[2] }
 
                             timestamp = datetime.datetime.fromtimestamp(action['timestamp']).strftime('%Y-%m-%d %H:%M:%S')
-                            sql = "INSERT IGNORE INTO product_visits (siteid, visitor, item, action_time) VALUES (%s, %s, %s, %s)"
+                            sql = "INSERT IGNORE INTO datamining_product_visits (siteid, visitor, item, action_time) VALUES (%s, %s, %s, %s)"
                             val = (siteid, visitor['visitorId'], event[3], timestamp)
                             cursor.execute(sql, val)
                             product_visits_count = product_visits_count+1
@@ -39,7 +39,7 @@ def run_rule_mining(siteid, confidence, support, conf):
             #print(product_meta)
             product_meta_count=0
             for product_id, product in product_meta.items():
-                sql = "INSERT IGNORE INTO product_meta (siteid, product_id, product_name, product_url, product_image) VALUES (%s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE product_name=%s, product_url=%s, product_image=%s, publish_time=CURRENT_TIMESTAMP"
+                sql = "INSERT IGNORE INTO datamining_product_meta (siteid, product_id, product_name, product_url, product_image) VALUES (%s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE product_name=%s, product_url=%s, product_image=%s, publish_time=CURRENT_TIMESTAMP"
                 val = (siteid, product_id, product['name'], product['url'], product['image'], product['name'], product['url'], product['image'])
                 cursor.execute(sql, val)
                 product_meta_count = product_meta_count+1
@@ -48,7 +48,7 @@ def run_rule_mining(siteid, confidence, support, conf):
             print(product_meta_count, " was inserted/updated to product_meta.")
 
             data = defaultdict(set)
-            sql = "select * from product_visits where siteid=" + siteid
+            sql = "select * from datamining_product_visits where siteid=" + siteid
             cursor.execute(sql)
 
             results = cursor.fetchall()
@@ -58,7 +58,7 @@ def run_rule_mining(siteid, confidence, support, conf):
 
             results = list(apriori(data.values(), min_support = support, min_confidence = confidence, max_length = 2))
 
-            sql = "delete from rules where siteid=" + siteid
+            sql = "delete from datamining_rules where siteid=" + siteid
             cursor.execute(sql)
 
             inserted_rule_count = 0;
@@ -70,7 +70,7 @@ def run_rule_mining(siteid, confidence, support, conf):
                         base_items = ','.join(sorted_keys)
                         suggests = list(stats.items_add)
                         for suggestion in suggests:
-                            sql = "INSERT IGNORE INTO rules (siteid, base_items, suggest, confidence) VALUES (%s, %s, %s, %s)"
+                            sql = "INSERT IGNORE INTO datamining_rules (siteid, base_items, suggest, confidence) VALUES (%s, %s, %s, %s)"
                             val = (siteid, base_items, suggestion, stats.confidence)
                             #print(siteid, base_items, suggestion, stats.confidence)
                             cursor.execute(sql, val)
